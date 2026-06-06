@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.venv/
+.env
+museai.db
+.gradle/
+build/
+.idea/
+.DS_Store

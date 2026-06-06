@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://museai:museai@postgres:5432/museai
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: change-me-in-production-secret
+    ports: ["8000:8000"]
+    depends_on: [postgres, redis, chromadb]
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: museai
+      POSTGRES_PASSWORD: museai
+      POSTGRES_DB: museai
+    ports: ["5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  chromadb:
+    image: chromadb/chroma:latest
+    ports: ["8001:8000"]
+volumes:
+  postgres_data:
