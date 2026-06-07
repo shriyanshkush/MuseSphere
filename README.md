@@ -218,8 +218,8 @@ Intent Detection
       ▼
 LangGraph Agent Router
       │
- ┌────┼────┬────┬────┐
- │    │    │    │    │
+ ┌────┼────┬────-------┬────----------┐
+ │    │    │           │              │
 Booking  Knowledge  Recommendation  Payment
 Agent    Agent      Agent           Agent
       │
