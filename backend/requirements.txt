@@ -1,13 +1,38 @@
+# Web Framework & Server
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Database & ORM (Async support)
 sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg[binary,pool]==3.2.3
+aiosqlite==0.20.0
+
+# Data Validation & Configuration
 pydantic==2.10.4
 pydantic-settings==2.7.0
+email-validator==2.2.0
+
+# Authentication & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.20
+bcrypt==4.0.1
+
+# Rate Limiting & Caching
+slowapi==0.1.9
+redis==5.2.1
+
+# AI, Vector Search & RAG (Using chromadb-client to avoid MSVC C++ requirement locally)
+chromadb-client==0.6.0
+google-generativeai==0.8.3
+langgraph==0.2.65
+langchain-core==0.3.31
+
+# Utilities
 qrcode[pil]==8.0
+
+# Testing & Client
 pytest==8.3.4
+pytest-asyncio==0.24.0
 httpx==0.28.1
-email-validator==2.2.0
-psycopg[binary]==3.2.3

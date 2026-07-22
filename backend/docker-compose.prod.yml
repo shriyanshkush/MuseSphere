@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: musesphere_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=MuseSphere API
+      - ENVIRONMENT=production
+      # In Option A (EC2 + RDS), point DATABASE_URL to your RDS db.t3.micro endpoint:
+      # - DATABASE_URL=postgresql+psycopg_async://postgres:YourSecurePassword@your-rds-endpoint.region.rds.amazonaws.com:5432/musesphere
+      # In Option B (All-in-One EC2 with swap), connect to the local postgres container below:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg_async://postgres:musesphere_secret@postgres:5432/musesphere}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - JWT_SECRET=${JWT_SECRET:-change-me-to-a-very-secure-32char-secret-key-in-prod}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - RATE_LIMIT_ENABLED=true
+      - DB_POOL_SIZE=5
+      - DB_MAX_OVERFLOW=10
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - musesphere_net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: musesphere_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: musesphere_secret
+      POSTGRES_DB: musesphere
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d musesphere"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - musesphere_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: musesphere_redis
+    restart: always
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - musesphere_net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  musesphere_net:
+    driver: bridge
